@@ -87,9 +87,9 @@ function getStatistics(){
 
 
 		setTimeout(() => {
-			let resposneTarget = document.querySelector("#telescope > div > div.row.mt-4 > div.col-10 > div > div:nth-child(3) > div:nth-child(1) > div > div > div > div > div:nth-child(7) > span.vjs-key").innerText.replace(':','').replaceAll('"','').trim();
-		
-			resolve( {duration, path, queriesCount, resposneTarget});
+			// let resposneTarget = document.querySelector("#telescope > div > div.row.mt-4 > div.col-10 > div > div:nth-child(3) > div:nth-child(1) > div > div > div > div > div:nth-child(7) > span.vjs-key").innerText.replace(':','').replaceAll('"','').trim();
+			let requestType = document.querySelector("#telescope > div > div.row.mt-4 > div.col-10 > div > div:nth-child(1) > div.table-responsive > table > tbody > tr:nth-child(3) > td:nth-child(2)")?.innerText?.trim();
+			resolve( {duration, path, queriesCount, requestType});
 		}, 100);		
 	});
 }
@@ -98,7 +98,7 @@ function getStatisticsLine(){
 	getStatistics().then(statistics =>{
 		//${statistics.path}\\t
 		let result = decodeURIComponent(
-				JSON.parse(`"${statistics.path}\\t${statistics.duration}\\t${statistics.queriesCount}\\t${statistics.resposneTarget}"`)
+				JSON.parse(`"${statistics.path}\\t${statistics.requestType}\\t${statistics.duration}\\t${statistics.queriesCount}"`)
 			);
 		console.log(result)
 		copy(result, 'text');
