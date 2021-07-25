@@ -33,6 +33,7 @@
         "http://*/telescope/requests/*"
       ],
       "js": [
+        "src/inject/tableToExcel.js",
         "src/inject/inject.js"
       ]
     }

@@ -6,4 +6,7 @@ chrome.browserAction.onClicked.addListener(function (tab) {
 	chrome.tabs.executeScript(tab.ib, {
 		file: '../inject/inject.js'
 	});
+	chrome.tabs.executeScript(tab.ib, {
+		file: '../inject/tableToExcel.js'
+	});
 });

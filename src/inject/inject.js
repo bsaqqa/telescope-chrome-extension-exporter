@@ -2,15 +2,21 @@
 
 var oldURL = "";
 var currentURL = window.location.href;
+var alertsElemnts;
 (function() {
-	addButton();
 	checkURLchange();
+
+	alertsElemnts = document.createElement('div');
+	alertsElemnts.className = "position-fixed ";
+	alertsElemnts.style = "left:.8rem; bottom:.8rem;"
+	document.body.appendChild(alertsElemnts);
 })();
 
 function checkURLchange(currentURL){
     if(currentURL != oldURL){
         oldURL = currentURL;
-		addButton();
+		checkRequestDetails();
+		checkRequestsIndexPage();
     }
 
     oldURL = window.location.href;
@@ -19,18 +25,52 @@ function checkURLchange(currentURL){
     }, 1000);
 }
 
-function addButton(){
+function checkRequestsIndexPage(){
+	if(
+		new RegExp(/^\/telescope\/requests/).test(window.location.pathname)	&&
+		!(window.location.pathname.length == 19 ||
+				 window.location.pathname.length == 20)
+	){
+		document.querySelector('#exportStatisctics')?.remove();
+		return ;
+	}
+	addExportButton();
+}
+
+function checkRequestDetails(){
 	if(!new RegExp(/^\/telescope\/requests\/\w/).test(window.location.pathname)){
 		document.querySelector('#copyStatisctics')?.remove();
 		return ;
 	}
+	addButton();
+}
+
+function addExportButton(){
+	if(!document.querySelector('#exportStatisctics')){
+		let header = document.querySelector("#telescope > div > div.d-flex.align-items-center.py-4.header")
+		var button = document.createElement('button');
+		
+
+		button.id = "exportStatisctics";
+		button.textContent = 'Export Statisctics';
+		button.className = "btn btn-outline-primary ml-3 mr-0";
+
+		button.onclick = function(){
+			// getStatisticsLine();
+			exportTable();
+			createAlert('Statistics exported successfully');
+		}
+		header.appendChild(button);
+	}
+}
+
+
+
+function addButton(){
 	if(!document.querySelector('#copyStatisctics')){
 		let header = document.querySelector("#telescope > div > div.d-flex.align-items-center.py-4.header")
 		var button = document.createElement('button');
-		var alertsElemnts = document.createElement('div');
-		alertsElemnts.className = "position-fixed ";
-		alertsElemnts.style = "left:.8rem; bottom:.8rem;"
-		document.body.appendChild(alertsElemnts);
+
 
 		button.id = "copyStatisctics";
 		button.textContent = 'Copy Statisctics';
@@ -42,34 +82,6 @@ function addButton(){
 		}
 		header.appendChild(button);
 
-		function hideAlert(alert){
-			alert.classList.toggle('show')
-			setTimeout(() => {
-				alert.classList.toggle('d-none')
-				alert.textContent = "";
-			}, 200);
-		}
-
-		function createAlert(text ="Success"){
-			let alert = document.createElement('div');
-			alert.innerText = text;	
-			alert.className = "btn btn-primary d-block px-3 py-2 ml-2 mb-2 fade ";
-
-			alertsElemnts.appendChild(alert);
-			setTimeout(() => {
-				alert.classList.toggle('show');
-
-				alert.onclick = function(e){
-					hideAlert(alert);
-				}
-			
-				setTimeout(() => {
-					hideAlert(alert);
-				}, 3000);
-
-			}, 100);
-
-		}
 	}
 }
 
@@ -97,6 +109,7 @@ function getStatistics(){
 function getStatisticsLine(){
 	getStatistics().then(statistics =>{
 		//${statistics.path}\\t
+		//${statistics.path}\\t${statistics.requestType}\\t
 		let result = decodeURIComponent(
 				JSON.parse(`"${statistics.path}\\t${statistics.requestType}\\t${statistics.duration}\\t${statistics.queriesCount}"`)
 			);
@@ -128,3 +141,45 @@ function copy(str, mimeType) {
 		}
 	}catch(ex){console.log('Wow! Clipboard Exeption.\n'+ex)}
 }
+
+
+function hideAlert(alert){
+	alert.classList.toggle('show')
+	setTimeout(() => {
+		alert.classList.toggle('d-none')
+		alert.textContent = "";
+	}, 200);
+}
+
+function createAlert(text ="Success"){
+	let alert = document.createElement('div');
+	alert.innerText = text;	
+	alert.className = "btn btn-primary d-block px-3 py-2 ml-2 mb-2 fade ";
+
+	alertsElemnts.appendChild(alert);
+	setTimeout(() => {
+		alert.classList.toggle('show');
+
+		alert.onclick = function(e){
+			hideAlert(alert);
+		}
+	
+		setTimeout(() => {
+			hideAlert(alert);
+		}, 3000);
+
+	}, 100);
+
+}
+
+
+function exportTable(){
+	var table = document.querySelector("#indexScreen");
+	TableToExcel.convert(table, {
+		name: "Reqeusts.xlsx",
+		sheet: {
+			name: "Telescope Requests"
+		}
+	});
+}
+
