@@ -183,3 +183,25 @@ function exportTable(){
 	});
 }
 
+
+chrome.runtime.onMessage.addListener(function(request) {
+    if(request.action === 'executeLoadAll') {
+		loadAll();
+    }
+});
+
+function loadAll(){
+	var numberOfMissing = 0;
+	var loaderInterval = setInterval(function(){
+		if(document.querySelector('.dontanimate a')){
+			document.querySelector('.dontanimate a').click()
+			numberOfMissing = 0;
+		}else{
+			if(numberOfMissing > 5){
+				clearInterval(loaderInterval);
+			}
+			numberOfMissing++;
+		}
+		window.scrollTo(0,document.body.scrollHeight);
+	}, 1000);
+}

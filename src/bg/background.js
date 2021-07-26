@@ -10,3 +10,4 @@ chrome.browserAction.onClicked.addListener(function (tab) {
 		file: '../inject/tableToExcel.js'
 	});
 });
+
